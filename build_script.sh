@@ -27,7 +27,7 @@ export HOSTCFLAGS="${SYSROOT_FLAGS} ${CFLAGS}"
 export HOSTLDFLAGS="${SYSROOT_FLAGS} ${LDFLAGS}"
 
 # defconfig
-TARGET_DEFCONFIG="${1:-gki_defconfig}"
+TARGET_DEFCONFIG="${1:-a56_defconfig}"
 ARGS="CC=clang ARCH=arm64 LLVM=1 LLVM_IAS=1"
 
 make -j"$(nproc)" \
