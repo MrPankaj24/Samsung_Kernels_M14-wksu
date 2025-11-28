@@ -26,6 +26,9 @@ export LD_LIBRARY_PATH="${TOOLCHAIN}/kernel-build-tools/linux-x86/lib64"
 export HOSTCFLAGS="${SYSROOT_FLAGS} ${CFLAGS}"
 export HOSTLDFLAGS="${SYSROOT_FLAGS} ${LDFLAGS}"
 
+export SKIP_ABI_CHECKS=1
+export SKIP_KMI_SYMBOL_LIST=1
+
 # defconfig
 TARGET_DEFCONFIG="${1:-a56_defconfig}"
 ARGS="CC=clang ARCH=arm64 LLVM=1 LLVM_IAS=1"
