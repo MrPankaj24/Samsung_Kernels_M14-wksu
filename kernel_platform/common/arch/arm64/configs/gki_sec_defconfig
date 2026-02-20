@@ -66,12 +66,12 @@ CONFIG_CRYPTO_SKC_FIPS=y
 
 
 
-# CONFIG_FIVE_GKI_10 is not set
+#CONFIG_FIVE_GKI_10 is not set
 
 
 
 
-# CONFIG_PROCA_GKI_10 is not set
+#CONFIG_PROCA_GKI_10 is not set
 
 
 
