@@ -23,32 +23,35 @@ CONFIG_CRYPTO_SKC_FIPS=y
 
 
 
-CONFIG_UH=n
+# CONFIG_UH is not set
+# CONFIG_UH_RKP is not set
+# CONFIG_UH_LKMAUTH is not set
+# CONFIG_UH_LKM_BLOCK is not set
+
+
+
+# CONFIG_RKP is not set
+# CONFIG_RKP_CFP_JOPP is not set
+# CONFIG_RKP_CFP is not set
+
+
+
+# CONFIG_KDP is not set
 
 
 
 
-CONFIG_RKP=n
+# CONFIG_FIVE is not set
 
 
 
 
-CONFIG_KDP=n
+# CONFIG_PROCA is not set
 
 
 
 
-CONFIG_FIVE=n
-
-
-
-
-CONFIG_PROCA=n
-
-
-
-
-CONFIG_PROCA_S_OS=y
+# CONFIG_PROCA_S_OS is not set
 
 
 
@@ -63,12 +66,12 @@ CONFIG_PROCA_S_OS=y
 
 
 
-CONFIG_FIVE_GKI_10=y
+# CONFIG_FIVE_GKI_10 is not set
 
 
 
 
-CONFIG_PROCA_GKI_10=y
+# CONFIG_PROCA_GKI_10 is not set
 
 
 
@@ -155,22 +158,22 @@ CONFIG_GAF_V6=y
 
 
 
-CONFIG_SECURITY_DEFEX=n
+# CONFIG_SECURITY_DEFEX is not set
 
 
 
 
-CONFIG_SECURITY_DEFEX_USER=y
+# CONFIG_SECURITY_DEFEX_USER is not set
 
 
 
 
-CONFIG_SECURITY_DEFEX_DTM=y
+# CONFIG_SECURITY_DEFEX_DTM is not set
 
 
 
 
-CONFIG_SECURITY_DEFEX_IMR=y
+# CONFIG_SECURITY_DEFEX_IMR is not set
 
 
 
@@ -291,11 +294,8 @@ CONFIG_EXT4_FS_POSIX_ACL=y
 
 
 
-CONFIG_UH_RKP=n
-CONFIG_UH_LKMAUTH=n
-CONFIG_UH_LKM_BLOCK=n
-CONFIG_RKP_CFP_JOPP=n
-CONFIG_RKP_CFP=n
+
+
 
 
 
