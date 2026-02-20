@@ -13,7 +13,7 @@ export TARGET_BUILD_VARIANT= user
 CHIPSET_NAME=sun
 
 export ANDROID_BUILD_TOP=$(pwd)
-export TARGET_PRODUCT=gki
+export TARGET_PRODUCT=perf
 export TARGET_BOARD_PLATFORM=gki
 
 export ANDROID_PRODUCT_OUT=${ANDROID_BUILD_TOP}/out/target/product/${MODEL}
@@ -35,4 +35,4 @@ export KBUILD_EXT_MODULES="\
 
 #3. build kernel
 cd ./kernel_platform/
-RECOMPILE_KERNEL=1 ./build/android/prepare_vendor.sh ${CHIPSET_NAME} ${TARGET_PRODUCT} sec | tee -a ../build.log
+RECOMPILE_KERNEL=1 ./build/android/prepare_vendor.sh ${CHIPSET_NAME} ${TARGET_PRODUCT} gki | tee -a ../build.log
