@@ -37,7 +37,8 @@ CONFIG_CRYPTO_SKC_FIPS=y
 
 
 # CONFIG_KDP is not set
-
+# CONFIG_KDP_NS is not set
+# CONFIG_KDP_FAKE is not set
 
 
 
