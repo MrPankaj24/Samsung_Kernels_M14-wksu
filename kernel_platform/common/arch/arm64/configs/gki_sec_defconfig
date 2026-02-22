@@ -30,15 +30,13 @@ CONFIG_CRYPTO_SKC_FIPS=y
 
 
 
-# CONFIG_RKP is not set
+CONFIG_RKP=n
 # CONFIG_RKP_CFP_JOPP is not set
 # CONFIG_RKP_CFP is not set
 
 
 
 # CONFIG_KDP is not set
-# CONFIG_KDP_NS is not set
-# CONFIG_KDP_FAKE is not set
 
 
 
