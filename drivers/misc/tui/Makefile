@@ -68,6 +68,7 @@ tuihw-objs += platforms/exynos980/stui_hal_display.o
 tuihw-objs += platforms/exynos980/stui_hal_touch.o
 endif
 
+#ifdef CONFIG_TZDEV
 ifdef CONFIG_SAMSUNG_TUI_LOWLEVEL
 tuihw-objs += iwd_agent.o
 
@@ -77,3 +78,4 @@ ccflags-y += -DCONFIG_SAMSUNG_TUI_LOWLEVEL
 endif
 
 obj-$(CONFIG_SAMSUNG_TUI) += tuihw.o tuihw-inf.o
+#endif
