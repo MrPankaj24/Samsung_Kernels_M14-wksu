@@ -66,4 +66,6 @@ obj-y               += samsung/
 # TEEGRIS kernel driver
 ccflags-$(CONFIG_TZDEV) += -I$(srctree)/drivers/misc/tzdev/include
 obj-$(CONFIG_TZDEV)     += tzdev/
+#ifdef CONFIG_TZDEV
 obj-$(CONFIG_SAMSUNG_TUI)     += tui/
+#endif
