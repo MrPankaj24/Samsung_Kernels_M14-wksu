@@ -10,6 +10,7 @@ export HOSTLDFLAGS="-L $(pwd)/toolchain/prebuilts/kernel-build-tools/linux-x86/l
 export DTC_FLAGS="-@"
 export PLATFORM_VERSION=13
 export ANDROID_MAJOR_VERSION=t
+export BUILD_NUMBER=M146BXXUADYJ2
 export LLVM=1
 export DEPMOD=depmod
 export ARCH=arm64
