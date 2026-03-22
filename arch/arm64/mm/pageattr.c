@@ -55,7 +55,7 @@ static int __change_memory_common(unsigned long start, unsigned long size,
 	return ret;
 }
 
-#ifdef KPM_BUILD
+#ifdef CONFIG_KPM_BUILD
 static int change_memory_common(unsigned long addr, int numpages,
 				pgprot_t set_mask, pgprot_t clear_mask)
 {
