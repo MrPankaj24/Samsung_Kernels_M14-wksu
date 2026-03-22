@@ -18,16 +18,9 @@ export TARGET_SOC=s5e8535
 make s5e8535-m14xnsxx_defconfig
 
 if [ "$KPM" = "1" ]; then
-    echo "[+] KPM build: disabling RWX protections"
-    scripts/config --disable ARCH_HAS_STRICT_MODULE_RWX
-    scripts/config --disable ARCH_HAS_STRICT_KERNEL_RWX
-    scripts/config --disable STRICT_KERNEL_RWX
-    scripts/config --disable STRICT_MODULE_RWX
+    scripts/config --enable KPM_BUILD
 else
-    echo "[+] Normal build: keeping RWX protections enabled"
+    scripts/config --disable KPM_BUILD
 fi
-
-# Debug check
-grep RWX .config
 
 make
