@@ -17,10 +17,10 @@ export ARCH=arm64
 export TARGET_SOC=s5e8535
 make s5e8535-m14xnsxx_defconfig
 
-if [ "$KPM" = "1" ]; then
-    scripts/config --enable KPM_BUILD
-else
-    scripts/config --disable KPM_BUILD
-fi
+#if [ "$KPM" = "1" ]; then
+#    scripts/config --enable KPM_BUILD
+#else
+#    scripts/config --disable KPM_BUILD
+#fi
 
 make
