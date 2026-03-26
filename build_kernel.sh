@@ -8,7 +8,7 @@ export HOSTLDFLAGS="-L $(pwd)/toolchain/prebuilts/kernel-build-tools/linux-x86/l
     -fuse-ld=lld --rtlib=compiler-rt"
 
 export DTC_FLAGS="-@"
-export PLATFORM_VERSION=13
+export PLATFORM_VERSION=15
 export ANDROID_MAJOR_VERSION=t
 export BUILD_NUMBER=M146BXXUADYJ2
 export LLVM=1
