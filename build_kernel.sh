@@ -1,5 +1,14 @@
 #!/bin/bash
 
+# Extract toolchain archives if present (required for CI environments)
+for f in *.tar.xz; do
+	if [ -f "$f" ]; then
+		echo "Extracting $f..."
+		tar -xf "$f"
+	fi
+done
+
+
 export PATH=$(pwd)/toolchain/clang/host/linux-x86/clang-r450784d/bin:$PATH
 export PATH=$(pwd)/toolchain/build/kernel/build-tools/path/linux-x86/:$PATH
 export HOSTCFLAGS="-I$(pwd)/toolchain/prebuilts/kernel-build-tools/linux-x86/include -isystem /usr/include"
