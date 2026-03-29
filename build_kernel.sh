@@ -23,4 +23,4 @@ make s5e8535-m14xnsxx_defconfig
 #    scripts/config --disable KPM_BUILD
 #fi
 
-make
+make -j$(nproc)

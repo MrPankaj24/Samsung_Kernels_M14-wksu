@@ -1,0 +1,35 @@
+name: Build Samsung M14 Kernel
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - susfs-zeromount-v5.15
+
+jobs:
+  build:
+    name: Build Kernel
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc build-essential flex bison libssl-dev libelf-dev clang lld llvm
+
+      - name: Build Kernel
+        run: |
+          bash build_kernel.sh
+
+      - name: Upload Kernel Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-build
+          path: |
+            out/arch/arm64/boot/Image
+            out/arch/arm64/boot/dtb.img
+            out/arch/arm64/boot/boot.img
