@@ -21,6 +21,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y bc build-essential flex bison libssl-dev libelf-dev clang lld llvm
 
+      - name: WKSU
+        run: | 
+          curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
+
       - name: Build Kernel
         run: |
           bash build_kernel.sh
