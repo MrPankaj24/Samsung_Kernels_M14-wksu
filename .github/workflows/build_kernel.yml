@@ -19,11 +19,22 @@ jobs:
       - name: Install Build Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bc build-essential flex bison libssl-dev libelf-dev clang lld llvm
+          sudo apt-get install -y bc build-essential flex bison libssl-dev libelf-dev clang lld llvm wget patch
 
       - name: WKSU
         run: | 
           curl -LSs "https://raw.githubusercontent.com/WildKernels/Wild_KSU/wild/kernel/setup.sh" | bash -s wild
+
+      - name: Apply Wild_KSU Patch
+        run: |
+          # Navigate to the Wild_KSU folder
+          cd Wild_KSU
+          # Download the patch using the raw URL
+          wget https://raw.githubusercontent.com/Enginex0/Super-Builders/main/android13-5.15/WildKSU/patches/70_ksu_safety-wksu-5.15.patch
+          # Apply the patch
+          patch -p1 < 70_ksu_safety-wksu-5.15.patch
+          # Go back to the root kernel directory
+          cd ..
 
       - name: Inject Custom Configs
         run: |
@@ -98,3 +109,12 @@ jobs:
             out/arch/arm64/boot/Image
             out/arch/arm64/boot/dtb.img
             out/arch/arm64/boot/boot.img
+
+      - name: Upload Kernel Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-build
+          path: |
+            out/arch/arm64/boot/Image
+            out/arch/arm64/boot/dtb.img
+            out/arch/arm64/boot/boot.img      
