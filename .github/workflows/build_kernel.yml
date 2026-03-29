@@ -29,11 +29,17 @@ jobs:
         run: |
           # Navigate to the Wild_KSU folder
           cd Wild_KSU
-          # Download the patch using the raw URL
+          
+          # Download the patch
           wget https://raw.githubusercontent.com/Enginex0/Super-Builders/main/android13-5.15/WildKSU/patches/70_ksu_safety-wksu-5.15.patch
-          # Apply the patch
-          patch -p1 < 70_ksu_safety-wksu-5.15.patch
-          # Go back to the root kernel directory
+          
+          # Fix the comment spacing inside the patch file so it matches our source code
+          sed -i 's|#endif //#ifdef CONFIG_KSU_SUSFS_SUS_KSTAT|#endif // #ifdef CONFIG_KSU_SUSFS_SUS_KSTAT|g' 70_ksu_safety-wksu-5.15.patch
+          
+          # Apply the patch (using -l to ignore any other minor whitespace issues)
+          patch -p1 -l < 70_ksu_safety-wksu-5.15.patch
+          
+          # Go back to the root directory
           cd ..
 
       - name: Inject Custom Configs
