@@ -100,8 +100,14 @@
 #include <linux/cn_proc.h>
 #include <linux/task_integrity.h>
 #include <linux/proca.h>
+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
+#include <linux/susfs_def.h>
+#endif
 #include <trace/events/oom.h>
 #include "internal.h"
+#ifdef CONFIG_ZEROMOUNT
+#include <linux/zeromount.h>
+#endif
 #include "fd.h"
 
 #include "../../lib/kstrtox.h"
@@ -901,6 +907,9 @@ static ssize_t mem_rw(struct file *file, char __user *buf,
 	ssize_t copied;
 	char *page;
 	unsigned int flags;
+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
+	struct vm_area_struct *vma;
+#endif
 
 	if (!mm)
 		return 0;
@@ -917,6 +926,22 @@ static ssize_t mem_rw(struct file *file, char __user *buf,
 
 	while (count > 0) {
 		size_t this_len = min_t(size_t, count, PAGE_SIZE);
+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
+		vma = find_vma(mm, addr);
+		if (vma && vma->vm_file) {
+			struct inode *inode = file_inode(vma->vm_file);
+			if (SUSFS_IS_INODE_SUS_MAP(inode)) {
+				if (write) {
+					copied = -EFAULT;
+				} else {
+					copied = -EIO;
+				}
+				*ppos = addr;
+				mmput(mm);
+				goto free;
+			}
+		}
+#endif
 
 		if (write && copy_from_user(page, buf, this_len)) {
 			copied = -EFAULT;
@@ -1818,6 +1843,10 @@ out:
 	return ERR_PTR(error);
 }
 
+#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+extern int susfs_open_redirect_spoof_do_proc_readlink(struct inode *inode, char *tmp_buf, int buflen);
+#endif
+
 static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
 {
 	char *tmp = (char *)__get_free_page(GFP_KERNEL);
@@ -1826,6 +1855,39 @@ static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
 
 	if (!tmp)
 		return -ENOMEM;
+
+#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+	if (SUSFS_IS_INODE_OPEN_REDIRECT(path->dentry->d_inode)) {
+		if (!susfs_open_redirect_spoof_do_proc_readlink(path->dentry->d_inode, tmp, buflen)) {
+			len = strlen(tmp);
+			if (copy_to_user(buffer, tmp, len))
+				len = -EFAULT;
+			kfree(tmp);
+			return len;
+		}
+	}
+#endif
+
+
+#ifdef CONFIG_ZEROMOUNT
+	if (!zeromount_should_skip() && path->dentry) {
+		struct inode *inode = d_backing_inode(path->dentry);
+		if (inode) {
+			char *vpath = zeromount_get_static_vpath(inode);
+			if (vpath) {
+				int vlen = strlen(vpath);
+				if (vlen > buflen)
+					vlen = buflen;
+				if (copy_to_user(buffer, vpath, vlen) == 0) {
+					kfree(vpath);
+					free_page((unsigned long)tmp);
+					return vlen;
+				}
+				kfree(vpath);
+			}
+		}
+	}
+#endif
 
 	pathname = d_path(path, tmp, PAGE_SIZE);
 	len = PTR_ERR(pathname);
@@ -2405,6 +2467,9 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
 	GENRADIX(struct map_files_info) fa;
 	struct map_files_info *p;
 	int ret;
+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
+	struct inode *inode;
+#endif
 
 	genradix_init(&fa);
 
@@ -2446,6 +2511,11 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
 	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
 		if (!vma->vm_file)
 			continue;
+#ifdef CONFIG_KSU_SUSFS_SUS_MAP
+		inode = file_inode(vma->vm_file);
+		if (SUSFS_IS_INODE_SUS_MAP(inode))
+			continue;
+#endif
 		if (++pos <= ctx->pos)
 			continue;
 

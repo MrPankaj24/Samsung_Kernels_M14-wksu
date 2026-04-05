@@ -9,7 +9,14 @@
 #include <linux/security.h>
 #include <linux/uaccess.h>
 #include <linux/compat.h>
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
+#include <linux/susfs_def.h>
+#endif // #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
+
 #include "internal.h"
+#ifdef CONFIG_ZEROMOUNT
+#include <linux/zeromount.h>
+#endif
 
 static int flags_by_mnt(int mnt_flags)
 {
@@ -83,9 +90,50 @@ int vfs_get_fsid(struct dentry *dentry, __kernel_fsid_t *fsid)
 }
 EXPORT_SYMBOL(vfs_get_fsid);
 
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+extern struct vfsmount *susfs_get_non_sus_vfsmnt_from_vfsmnt(struct vfsmount *vfsmnt);
+#endif //#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+
+#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+extern int susfs_open_redirect_spoof_vfs_statfs(struct inode *inode, struct kstatfs *buf);
+#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+
 int vfs_statfs(const struct path *path, struct kstatfs *buf)
 {
 	int error;
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+	struct vfsmount *no_sus_vfsmnt = NULL;
+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+#ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+	struct inode *inode = path->dentry->d_inode;
+
+	if (SUSFS_IS_INODE_OPEN_REDIRECT(inode)) {
+		if (susfs_open_redirect_spoof_vfs_statfs(inode, buf))
+			goto orig_flow;
+		return 0;
+	}
+#endif // #ifdef CONFIG_KSU_SUSFS_OPEN_REDIRECT
+
+#ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+	if (likely(susfs_is_current_proc_umounted_app() && path->mnt)) {
+		no_sus_vfsmnt = susfs_get_non_sus_vfsmnt_from_vfsmnt(path->mnt);
+		if (path->mnt == no_sus_vfsmnt) {
+			dput(no_sus_vfsmnt->mnt_root);
+			mntput(no_sus_vfsmnt);
+			goto orig_flow;
+		}
+		error = statfs_by_dentry(no_sus_vfsmnt->mnt_root, buf);
+		if (!error)
+			buf->f_flags = calculate_f_flags(no_sus_vfsmnt);
+		dput(no_sus_vfsmnt->mnt_root);
+		mntput(no_sus_vfsmnt);
+		return error;
+	}
+#endif // #ifdef CONFIG_KSU_SUSFS_SUS_MOUNT
+
+#if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
+orig_flow:
+#endif // #if defined(CONFIG_KSU_SUSFS_SUS_MOUNT) || defined(CONFIG_KSU_SUSFS_OPEN_REDIRECT)
 
 	error = statfs_by_dentry(path->dentry, buf);
 	if (!error)
@@ -102,7 +150,14 @@ int user_statfs(const char __user *pathname, struct kstatfs *st)
 retry:
 	error = user_path_at(AT_FDCWD, pathname, lookup_flags, &path);
 	if (!error) {
+#ifdef CONFIG_ZEROMOUNT
+		int spoofed;
+#endif
 		error = vfs_statfs(&path, st);
+#ifdef CONFIG_ZEROMOUNT
+		spoofed = zeromount_spoof_statfs(pathname, st);
+		(void)spoofed;
+#endif
 		path_put(&path);
 		if (retry_estale(error, lookup_flags)) {
 			lookup_flags |= LOOKUP_REVAL;
